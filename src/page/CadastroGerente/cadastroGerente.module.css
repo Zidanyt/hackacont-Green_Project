@@ -1,0 +1,13 @@
+.container {
+    background-image: url('../../assets/img/bannem_adm_.jpg');
+    height: 100vh;
+    background-size: cover;
+    border: 2px solid black;
+    display: flex;
+    justify-content: end;
+    padding-right: 100px;
+}
+
+.box {
+    border: 2px solid black;
+} 

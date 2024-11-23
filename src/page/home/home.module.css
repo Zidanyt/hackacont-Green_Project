@@ -1,0 +1,60 @@
+.home_container {
+    width: 100vw;
+    height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-image: url('../../assets/img/banne_home_1.jpg');
+    background-repeat: no-repeat;
+    object-fit: cover;
+    background-size: cover;
+    color: #ffffff;
+}
+
+.top_links {
+    display: flex;
+    justify-content: flex-end;
+    gap: 2.5rem;
+    padding: .8rem 1rem;
+}
+
+.link_ {
+    background-color: #559D43;
+    color: #ffffff;
+    padding: .5rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+}
+
+.texto {
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    font-size: 2rem;
+    padding-top: 2rem;
+}
+.texto > p {
+    max-width: 500px;
+    font-style: italic;
+}
+
+.center_link {
+    display: flex;
+    justify-content: center;
+    margin-top: 150px;
+}
+
+.link_cadastro {
+    background-color: #559D43;
+    color: white;
+    padding: .5rem 2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.button {
+    background-color: #559D43 !important;
+    color: rgb(48, 33, 100);
+}
