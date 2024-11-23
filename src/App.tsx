@@ -2,7 +2,7 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './page/home/home';
 import CadastroGerente from './page/CadastroGerente/CadastroGerente';
-import Login from './page/login/Login';
+import Login from './page/LoginGerente/LoginGerente';
 import MapaReciclagem  from './components/MapaReciclagem';
 
 function App() {
