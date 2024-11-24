@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, TextField, Typography } from '@mui/material';
-
-import style from './cadastroGerente.module.css'
+import { useNavigate } from 'react-router-dom';
+import { registerUser } from '../../api/authService';
+import style from './cadastroGerente.module.css';
 
 function CadastroGerente() {
   const [formData, setFormData] = useState({
@@ -12,20 +13,50 @@ function CadastroGerente() {
     cnpj: '',
     localizacao: '',
   });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setFormData((prevData) => ({
+            ...prevData,
+            localizacao: `Lat: ${latitude}, Lon: ${longitude}`,
+          }));
+        },
+        (error) => {
+          console.error('Erro ao obter localização:', error);
+          setErrorMessage('Não foi possível obter a localização.');
+        }
+      );
+    } else {
+      setErrorMessage('Geolocalização não suportada no seu navegador.');
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Dados enviados:', formData);
+    console.log('Dados para enviar:', formData);
+    try {
+      const response = await registerUser(formData);
+      console.log('Cadastro realizado com sucesso:', response);
+      navigate('/login');
+    } catch (error: any) {
+      console.error('Erro ao cadastrar:', error);
+      setErrorMessage(error.message || 'Erro ao realizar cadastro.');
+    }
   };
 
   return (
     <div className={style.container}>
-      <div>
+      <div className={style.container_1}>
         <Box
           className={style.box}
           sx={{
@@ -40,6 +71,11 @@ function CadastroGerente() {
           <Typography variant="h5" component="h1" sx={{ mb: 3, textAlign: 'center' }}>
             Cadastro de Gerente
           </Typography>
+          {errorMessage && (
+            <Typography color="error" sx={{ mb: 2, textAlign: 'center' }}>
+              {errorMessage}
+            </Typography>
+          )}
           <form onSubmit={handleSubmit}>
             <TextField
               fullWidth
@@ -84,22 +120,8 @@ function CadastroGerente() {
               onChange={handleChange}
               sx={{ mb: 2 }}
             />
-            <TextField
-              fullWidth
-              label="Localização"
-              name="localizacao"
-              value={formData.localizacao}
-              onChange={handleChange}
-              sx={{ mb: 3 }}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              onClick={() => window.location.href = '/login'}
-            >
-              Entrar
+            <Button className={style.botton} type="submit" variant="contained" color="primary" fullWidth>
+              Cadastrar
             </Button>
           </form>
         </Box>

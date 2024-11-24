@@ -1,0 +1,21 @@
+.container {
+    background-image: url('../../assets/img/bannemadm.jpg');
+    background-size: cover;
+    background-position: center;
+    padding-bottom: 100px;
+    width: 100%;
+    height: 100%;
+    padding-bottom: 200px;
+}
+ .container_1{
+    display: flex;
+ }
+
+.box {
+  background-color: #B1D690 !important;
+  margin-left: 50% !important;
+  margin-top: 10% !important;
+} 
+.botton{
+    background-color: #73EC8B !important;
+}
