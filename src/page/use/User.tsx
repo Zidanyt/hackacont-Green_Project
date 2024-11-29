@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { LoginData } from '../../interfaces/login.interface';
-import style from './loginrec.module.css'
+import style from './use.module.css'
 
-function LoginRecycling() {
+function User() {
   const [loginData, setLoginData] = useState<LoginData>({
     gmail: '',
     senha: '',
@@ -38,7 +38,7 @@ function LoginRecycling() {
       }}
     >
       <Typography variant="h5" component="h1" sx={{ mb: 3, textAlign: 'center' }}>
-        Login do Reciclador
+        seja bem-vindo
       </Typography>
       <form onSubmit={handleSubmit}>
         <TextField
@@ -68,4 +68,4 @@ function LoginRecycling() {
   );
 }
 
-export default LoginRecycling;
+export default User;

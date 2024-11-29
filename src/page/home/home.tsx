@@ -13,7 +13,7 @@ function Home() {
     <div className={style.home_container}>
       <div className={style.top_links}>
         <Link className={style.link_} to="/fale-com-agente">fale-com-agente</Link>
-        <Link className={style.link_} to="/entrar">entrar</Link>
+        <Link className={style.link_} to="/user">entrar</Link>
       </div>
       <span className={style.texto}>
         <p>Não desperdice seus vegetais e frutas. 
@@ -48,7 +48,7 @@ function Home() {
             <Button variant="contained" color="success" fullWidth onClick={() => window.location.href = '/cadastro-gerente'}>
               Gerente
             </Button>
-            <Button variant="contained" color="success" fullWidth>
+            <Button variant="contained" color="success" fullWidth onClick={() => window.location.href = '/cadastro-reciclador'}>
               Reciclador
             </Button>
           </Box>
