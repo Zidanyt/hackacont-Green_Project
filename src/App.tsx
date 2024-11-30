@@ -7,12 +7,14 @@ import MapaReciclagem  from './components/MapaReciclagem';
 import LoginRecycling from './page/logirecycling/loginRecycling';
 import RecyclingCadastro from './page/recycling/recyclingCadastro';
 import User from './page/use/User';
+import { Local } from './components/Local';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/Local" element={<Local />} />
         <Route path="/user" element={<User/>} />
         <Route path="/login-reciclador" element={<LoginRecycling/>} />
         <Route path="/cadastro-reciclador" element={<RecyclingCadastro/>} />

@@ -20,7 +20,7 @@ function User() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Dados de login enviados:', loginData);
-    navigate('/mapa-reciclagem');
+    navigate('/Local');
   };
 
   return (
