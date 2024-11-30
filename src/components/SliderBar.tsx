@@ -116,6 +116,9 @@ export default function PersistentDrawerLeft() {
           <Typography variant="h6" noWrap component="div">
             <img src={logo} width={50} alt="" />
           </Typography>
+          <Typography sx={{marginLeft:'15px',fontSize:'20px'}}>
+           GreenLink
+          </Typography>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -139,7 +142,6 @@ export default function PersistentDrawerLeft() {
         </DrawerHeader>
         <Divider />
         <List sx={{backgroundColor:'#D3EE98', margin:'20px'}}>
-         
           {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton sx={{backgroundColor:'#D3EE98', color:'white'}}>
