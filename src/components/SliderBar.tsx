@@ -16,10 +16,11 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
+import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import MailIcon from '@mui/icons-material/Mail';
 import logo from'../assets/img/logogreenlike.svg'
 import MapaReciclagem from './MapaReciclagem';
+import AdsClickIcon from '@mui/icons-material/AdsClick';
 
 const drawerWidth = 240;
 
@@ -142,11 +143,11 @@ export default function PersistentDrawerLeft() {
         </DrawerHeader>
         <Divider />
         <List sx={{backgroundColor:'#D3EE98', margin:'20px'}}>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+          {['locais perto', 'pedidos', 'messagem',].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton sx={{backgroundColor:'#D3EE98', color:'white'}}>
                 <ListItemIcon sx={{padding:'20px', color:'white'}}>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                {index % 3 === 0 ? <AdsClickIcon /> : (index % 3 === 1 ? <MailIcon /> : <InsertCommentIcon />)}
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>

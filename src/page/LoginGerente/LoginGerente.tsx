@@ -25,7 +25,7 @@ function Login() {
     try {
       const response = await loginUser(loginData);
       console.log('Login realizado com sucesso:', response);
-      navigate('/mapa-reciclagem');
+      navigate('/Local');
     } catch (error: any) {
       console.error('Erro ao fazer login:', error);
       setErrorMessage(error.message || 'Erro ao realizar login.');
