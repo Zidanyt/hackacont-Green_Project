@@ -1,6 +1,6 @@
 export interface LoginData {
-    gmail: string;
-    senha: string;
-    nome?: string;
+    email: string;
+    password: string;
+    name?: string;
     cnpj?: string;
   }

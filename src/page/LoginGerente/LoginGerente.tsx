@@ -9,8 +9,8 @@ import style from './LoginGerente.module.css'
 
 function Login() {
   const [loginData, setLoginData] = useState<LoginData>({
-    gmail: '',
-    senha: '',
+    email: '',
+    password: '',
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -58,17 +58,17 @@ function Login() {
             <TextField
               fullWidth
               label="Gmail"
-              name="gmail"
-              value={loginData.gmail}
+              name="email"
+              value={loginData.email}
               onChange={handleChange}
               sx={{ mb: 2 }}
             />
             <TextField
               fullWidth
               label="Senha"
-              name="senha"
+              name="password"
               type="password"
-              value={loginData.senha}
+              value={loginData.password}
               onChange={handleChange}
               sx={{ mb: 2 }}
             />

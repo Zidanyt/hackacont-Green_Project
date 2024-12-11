@@ -2,17 +2,16 @@ import axiosInstance from './axiosInstance';
 import axios from 'axios';
 
 interface RegisterData {
-  nome: string;
-  gmail: string;
-  senha: string;
+  name: string;
+  email: string;
+  password: string;
   repetirSenha: string;
   cnpj: string;
-  localizacao: string;
 }
 
 interface LoginData {
-  gmail: string;
-  senha: string;
+  email: string;
+  password: string;
 }
 
 export const registerUser = async (data: RegisterData) => {
