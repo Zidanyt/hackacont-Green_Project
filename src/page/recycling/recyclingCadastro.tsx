@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { Box, Button, TextField, Typography } from '@mui/material';
+import style from './recycling.module.css';
 
-import style from './recycling.module.css'
+const API_URL = 'https://meruem.vercel.app/register-user';
 
 function RecyclingCadastro() {
   const [formData, setFormData] = useState({
-    nome: '',
-    gmail: '',
-    senha: '',
-    repetirSenha: '',
-    localizacao: '',
+    name: '',
+    email: '',
+    password: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,9 +17,21 @@ function RecyclingCadastro() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Dados enviados:', formData);
+    try {
+      const response = await axios.post(API_URL, {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      console.log('Dados enviados com sucesso:', response.data);
+      window.location.href = '/login-reciclador';
+    } catch (error) {
+      console.error('Erro ao enviar dados:', error);
+      alert('Erro ao realizar o cadastro. Tente novamente.');
+    }
   };
 
   return (
@@ -43,45 +55,28 @@ function RecyclingCadastro() {
             <TextField
               fullWidth
               label="Nome"
-              name="nome"
-              value={formData.nome}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               sx={{ mb: 2 }}
             />
             <TextField
               fullWidth
               label="Gmail"
-              name="gmail"
+              name="email"
               type="email"
-              value={formData.gmail}
+              value={formData.email}
               onChange={handleChange}
               sx={{ mb: 2 }}
             />
             <TextField
               fullWidth
               label="Senha"
-              name="senha"
+              name="password"
               type="password"
-              value={formData.senha}
+              value={formData.password}
               onChange={handleChange}
               sx={{ mb: 2 }}
-            />
-            <TextField
-              fullWidth
-              label="Repetir Senha"
-              name="repetirSenha"
-              type="password"
-              value={formData.repetirSenha}
-              onChange={handleChange}
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              fullWidth
-              label="Localização"
-              name="localizacao"
-              value={formData.localizacao}
-              onChange={handleChange}
-              sx={{ mb: 3 }}
             />
             <Button
               className={style.botton}
@@ -89,7 +84,6 @@ function RecyclingCadastro() {
               variant="contained"
               color="primary"
               fullWidth
-              onClick={() => window.location.href = '/login-reciclador'}
             >
               Entrar
             </Button>

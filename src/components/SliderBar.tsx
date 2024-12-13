@@ -18,15 +18,18 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import MailIcon from '@mui/icons-material/Mail';
-import logo from'../assets/img/logogreenlike.svg'
-import MapaReciclagem from './MapaReciclagem';
 import AdsClickIcon from '@mui/icons-material/AdsClick';
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import logo from '../assets/img/logogreenlike.svg';
+import MapaReciclagem from './MapaReciclagem';
 
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
-}>(({ theme }) => ({
+}>(({ theme, open }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
   transition: theme.transitions.create('margin', {
@@ -34,18 +37,13 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     duration: theme.transitions.duration.leavingScreen,
   }),
   marginLeft: `-${drawerWidth}px`,
-  variants: [
-    {
-      props: ({ open }) => open,
-      style: {
-        transition: theme.transitions.create('margin', {
-          easing: theme.transitions.easing.easeOut,
-          duration: theme.transitions.duration.enteringScreen,
-        }),
-        marginLeft: 0,
-      },
-    },
-  ],
+  ...(open && {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: 0,
+  }),
 }));
 
 interface AppBarProps extends MuiAppBarProps {
@@ -54,71 +52,97 @@ interface AppBarProps extends MuiAppBarProps {
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({ theme }) => ({
+})<AppBarProps>(({ theme, open }) => ({
   transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  variants: [
-    {
-      props: ({ open }) => open,
-      style: {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: `${drawerWidth}px`,
-        transition: theme.transitions.create(['margin', 'width'], {
-          easing: theme.transitions.easing.easeOut,
-          duration: theme.transitions.duration.enteringScreen,
-        }),
-      },
-    },
-  ],
+  ...(open && {
+    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: `${drawerWidth}px`,
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
 }));
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
   justifyContent: 'flex-end',
 }));
 
+// Estilo do modal
+const modalStyle = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+  borderRadius: '10px',
+};
+
 export default function PersistentDrawerLeft() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [modalOpen, setModalOpen] = React.useState(false); // Estado do modal
+  const [location, setLocation] = React.useState({ latitude: '', longitude: '' }); // Localização
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
+  const handleDrawerOpen = () => setOpen(true);
+  const handleDrawerClose = () => setOpen(false);
+
+  const handleModalOpen = () => {
+    // Obtém localização do usuário
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            latitude: position.coords.latitude.toString(),
+            longitude: position.coords.longitude.toString(),
+          });
+          setModalOpen(true);
+        },
+        () => alert('Erro ao obter localização. Habilite a geolocalização.')
+      );
+    } else {
+      alert('Geolocalização não suportada pelo navegador.');
+    }
   };
 
-  const handleDrawerClose = () => {
-    setOpen(false);
+  const handleModalClose = () => setModalOpen(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Localização cadastrada:', location);
+    setModalOpen(false);
+    // Aqui você pode implementar lógica para adicionar o ponto ao mapa
   };
 
   return (
-    <Box sx={{ display: 'flex'}}>
+    <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open} sx={{backgroundColor:'#D3EE98'}}>
+      <AppBar position="fixed" open={open} sx={{ backgroundColor: '#D3EE98' }}>
         <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
-            sx={[
-              {
-                mr: 2,
-              },
-              open && { display: 'none' },
-            ]}
+            sx={{ mr: 2, ...(open && { display: 'none' }) }}
           >
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
             <img src={logo} width={50} alt="" />
           </Typography>
-          <Typography sx={{marginLeft:'15px',fontSize:'20px'}}>
-           GreenLink
+          <Typography sx={{ marginLeft: '15px', fontSize: '20px' }}>
+            GreenLink
           </Typography>
         </Toolbar>
       </AppBar>
@@ -135,30 +159,83 @@ export default function PersistentDrawerLeft() {
         anchor="left"
         open={open}
       >
-        <DrawerHeader sx={{backgroundColor:'#D3EE98'}}>
-        <h4 style={{color:'white'}}>menu pra onde vamos</h4>
-          <IconButton sx={{color:'white'}} onClick={handleDrawerClose}>
+        <DrawerHeader sx={{ backgroundColor: '#D3EE98' }}>
+          <h4 style={{ color: 'white' }}>menu pra onde vamos</h4>
+          <IconButton sx={{ color: 'white' }} onClick={handleDrawerClose}>
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <List sx={{backgroundColor:'#D3EE98', margin:'20px'}}>
-          {['locais perto', 'pedidos', 'messagem',].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton sx={{backgroundColor:'#D3EE98', color:'white'}}>
-                <ListItemIcon sx={{padding:'20px', color:'white'}}>
-                {index % 3 === 0 ? <AdsClickIcon /> : (index % 3 === 1 ? <MailIcon /> : <InsertCommentIcon />)}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
+        <List sx={{ backgroundColor: '#D3EE98', margin: '20px' }}>
+          <ListItem disablePadding>
+            <ListItemButton sx={{ backgroundColor: '#D3EE98', color: 'white' }} onClick={handleModalOpen}>
+              <ListItemIcon sx={{ padding: '20px', color: 'white' }}>
+                <AdsClickIcon />
+              </ListItemIcon>
+              <ListItemText primary="cria ponto" />
+            </ListItemButton>
+          </ListItem>
         </List>
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
-        <MapaReciclagem/>
+        <MapaReciclagem />
       </Main>
+
+      {/* Modal de cadastro */}
+      <Modal open={modalOpen} onClose={handleModalClose}>
+        <Box sx={modalStyle}>
+          <Typography variant="h6" component="h2" gutterBottom>
+            Cadastre sua localização
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              label="Latitude"
+              value={location.latitude}
+              margin="normal"
+              InputProps={{ readOnly: true }}
+            />
+            <TextField
+              fullWidth
+              label="Longitude"
+              value={location.longitude}
+              margin="normal"
+              InputProps={{ readOnly: true }}
+            />
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              Cadastrar Ponto
+            </Button>
+          </form>
+        </Box>
+      </Modal>
+
+        <Modal open={modalOpen} onClose={handleModalClose}>
+        <Box sx={modalStyle}>
+          <Typography variant="h6" component="h2" gutterBottom>
+            Cadastre sua localização
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              label="Latitude"
+              value={location.latitude}
+              margin="normal"
+              InputProps={{ readOnly: true }}
+            />
+            <TextField
+              fullWidth
+              label="Longitude"
+              value={location.longitude}
+              margin="normal"
+              InputProps={{ readOnly: true }}
+            />
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              Cadastrar Ponto
+            </Button>
+          </form>
+        </Box>
+      </Modal>
     </Box>
   );
 }
