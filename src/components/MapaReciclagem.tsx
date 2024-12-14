@@ -22,14 +22,19 @@ function MapaReciclagem() {
   const [searchInput, setSearchInput] = useState('');
   const [mapCenter, setMapCenter] = useState<[number, number]>([-3.36329, -39.83018]);
 
-  const fetchNearbyLocations = async (lat: number, lon: number) => {
+  // Função para buscar dados da API de pontos cadastrados
+  const fetchLocationsFromAPI = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/locations/nearby`, {
-        params: { lat, lon },
-      });
-      setLocations(response.data);
+      const response = await axios.get('https://meruem.vercel.app/add-point');
+      // Convertendo a resposta para o formato esperado (lat, lon, name)
+      const formattedLocations = response.data.map((item: any) => ({
+        lat: parseFloat(item.lat),
+        lon: parseFloat(item.lon),
+        name: item.name || 'Ponto Sem Nome',
+      }));
+      setLocations(formattedLocations);
     } catch (error) {
-      console.error('Erro ao buscar locais próximos:', error);
+      console.error('Erro ao buscar locais da API:', error);
     }
   };
 
@@ -40,7 +45,6 @@ function MapaReciclagem() {
           const { latitude, longitude } = position.coords;
           setUserLocation({ lat: latitude, lon: longitude, name: 'Sua Localização' });
           setMapCenter([latitude, longitude]);
-          fetchNearbyLocations(latitude, longitude);
         },
         (error) => {
           console.error('Erro ao obter localização do navegador:', error);
@@ -62,7 +66,6 @@ function MapaReciclagem() {
         const lon = parseFloat(location.lon);
         setMapCenter([lat, lon]);
         setUserLocation({ lat, lon, name: location.display_name });
-        fetchNearbyLocations(lat, lon);
       } else {
         console.error('Localização não encontrada');
       }
@@ -73,6 +76,7 @@ function MapaReciclagem() {
 
   useEffect(() => {
     getUserLocationFromBrowser();
+    fetchLocationsFromAPI(); // Busca os dados da API ao carregar
   }, []);
 
   return (
@@ -94,6 +98,7 @@ function MapaReciclagem() {
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <ChangeMapView center={mapCenter} />
 
+        {/* Exibindo locais obtidos da API */}
         {locations.map((location, index) => (
           <Marker
             key={index}
@@ -112,6 +117,7 @@ function MapaReciclagem() {
           </Marker>
         ))}
 
+        {/* Exibindo localização do usuário */}
         {userLocation && (
           <Marker
             position={[userLocation.lat, userLocation.lon]}

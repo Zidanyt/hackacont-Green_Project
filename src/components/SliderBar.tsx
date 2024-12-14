@@ -1,27 +1,26 @@
 import * as React from 'react';
+import axios from 'axios';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InsertCommentIcon from '@mui/icons-material/InsertComment';
-import MailIcon from '@mui/icons-material/Mail';
-import AdsClickIcon from '@mui/icons-material/AdsClick';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import AdsClickIcon from '@mui/icons-material/AdsClick';
 import logo from '../assets/img/logogreenlike.svg';
 import MapaReciclagem from './MapaReciclagem';
 
@@ -75,7 +74,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-// Estilo do modal
 const modalStyle = {
   position: 'absolute' as 'absolute',
   top: '50%',
@@ -91,37 +89,40 @@ const modalStyle = {
 export default function PersistentDrawerLeft() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [modalOpen, setModalOpen] = React.useState(false); // Estado do modal
-  const [location, setLocation] = React.useState({ latitude: '', longitude: '' }); // Localização
+  const [modalOpen, setModalOpen] = React.useState(false);
+
+  const [formData, setFormData] = React.useState({
+    name: '',
+    street: '',
+    neighborhood: '',
+    city: '',
+    email: '',
+    cnpj: '',
+  });
 
   const handleDrawerOpen = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
 
-  const handleModalOpen = () => {
-    // Obtém localização do usuário
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            latitude: position.coords.latitude.toString(),
-            longitude: position.coords.longitude.toString(),
-          });
-          setModalOpen(true);
-        },
-        () => alert('Erro ao obter localização. Habilite a geolocalização.')
-      );
-    } else {
-      alert('Geolocalização não suportada pelo navegador.');
-    }
-  };
-
+  const handleModalOpen = () => setModalOpen(true);
   const handleModalClose = () => setModalOpen(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Localização cadastrada:', location);
-    setModalOpen(false);
-    // Aqui você pode implementar lógica para adicionar o ponto ao mapa
+
+    try {
+      const response = await axios.post('https://meruem.vercel.app/add-point', formData);
+      console.log('API Response:', response.data);
+      alert('Ponto cadastrado com sucesso!');
+      setModalOpen(false);
+    } catch (error) {
+      console.error('Erro ao enviar dados:', error);
+      alert('Erro ao cadastrar o ponto.');
+    }
   };
 
   return (
@@ -129,54 +130,43 @@ export default function PersistentDrawerLeft() {
       <CssBaseline />
       <AppBar position="fixed" open={open} sx={{ backgroundColor: '#D3EE98' }}>
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
-          >
+          <IconButton color="inherit" onClick={handleDrawerOpen} edge="start" sx={{ mr: 2 }}>
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap>
             <img src={logo} width={50} alt="" />
           </Typography>
-          <Typography sx={{ marginLeft: '15px', fontSize: '20px' }}>
-            GreenLink
-          </Typography>
+          <Typography sx={{ marginLeft: '15px', fontSize: '20px' }}>GreenLink</Typography>
         </Toolbar>
       </AppBar>
       <Drawer
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-          },
+          '& .MuiDrawer-paper': { width: drawerWidth, boxSizing: 'border-box' },
         }}
         variant="persistent"
         anchor="left"
         open={open}
       >
         <DrawerHeader sx={{ backgroundColor: '#D3EE98' }}>
-          <h4 style={{ color: 'white' }}>menu pra onde vamos</h4>
           <IconButton sx={{ color: 'white' }} onClick={handleDrawerClose}>
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <List sx={{ backgroundColor: '#D3EE98', margin: '20px' }}>
+        <List sx={{ backgroundColor: '#D3EE98' }}>
           <ListItem disablePadding>
-            <ListItemButton sx={{ backgroundColor: '#D3EE98', color: 'white' }} onClick={handleModalOpen}>
-              <ListItemIcon sx={{ padding: '20px', color: 'white' }}>
+            <ListItemButton onClick={handleModalOpen}>
+              <ListItemIcon sx={{ color: 'white' }}>
                 <AdsClickIcon />
               </ListItemIcon>
-              <ListItemText primary="cria ponto" />
+              <ListItemText primary="Cadastre sua localização" sx={{ color: 'white' }} />
             </ListItemButton>
           </ListItem>
         </List>
       </Drawer>
+
       <Main open={open}>
         <DrawerHeader />
         <MapaReciclagem />
@@ -185,52 +175,17 @@ export default function PersistentDrawerLeft() {
       {/* Modal de cadastro */}
       <Modal open={modalOpen} onClose={handleModalClose}>
         <Box sx={modalStyle}>
-          <Typography variant="h6" component="h2" gutterBottom>
+          <Typography variant="h6" gutterBottom>
             Cadastre sua localização
           </Typography>
           <form onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="Latitude"
-              value={location.latitude}
-              margin="normal"
-              InputProps={{ readOnly: true }}
-            />
-            <TextField
-              fullWidth
-              label="Longitude"
-              value={location.longitude}
-              margin="normal"
-              InputProps={{ readOnly: true }}
-            />
-            <Button type="submit" variant="contained" color="primary" fullWidth>
-              Cadastrar Ponto
-            </Button>
-          </form>
-        </Box>
-      </Modal>
-
-        <Modal open={modalOpen} onClose={handleModalClose}>
-        <Box sx={modalStyle}>
-          <Typography variant="h6" component="h2" gutterBottom>
-            Cadastre sua localização
-          </Typography>
-          <form onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="Latitude"
-              value={location.latitude}
-              margin="normal"
-              InputProps={{ readOnly: true }}
-            />
-            <TextField
-              fullWidth
-              label="Longitude"
-              value={location.longitude}
-              margin="normal"
-              InputProps={{ readOnly: true }}
-            />
-            <Button type="submit" variant="contained" color="primary" fullWidth>
+          <TextField fullWidth name="neme" label="nome do local" margin="normal" onChange={handleChange} />
+            <TextField fullWidth name="street" label="Rua" margin="normal" onChange={handleChange} />
+            <TextField fullWidth name="neighborhood" label="Bairro" margin="normal" onChange={handleChange} />
+            <TextField fullWidth name="city" label="Cidade" margin="normal" onChange={handleChange} />
+            <TextField fullWidth name="email" label="E-mail" type="email" margin="normal" onChange={handleChange} />
+            <TextField fullWidth name="cnpj" label="CNPJ" margin="normal" onChange={handleChange} />
+            <Button type="submit" variant="contained" color="success" fullWidth>
               Cadastrar Ponto
             </Button>
           </form>
